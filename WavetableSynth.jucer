@@ -5,6 +5,14 @@
               companyName="OnkiAudio" pluginFormats="buildVST3" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="CeIzpj" name="WavetableSynth">
     <GROUP id="{561C1194-F554-145B-5732-F5971F0E983F}" name="Source">
+      <FILE id="XnhbHA" name="WavetableSynth.h" compile="0" resource="0"
+            file="Source/WavetableSynth.h"/>
+      <FILE id="zoqG9K" name="WavetableSynth.cpp" compile="1" resource="0"
+            file="Source/WavetableSynth.cpp"/>
+      <FILE id="POZaFm" name="WavetableOscillator.cpp" compile="1" resource="0"
+            file="Source/WavetableOscillator.cpp"/>
+      <FILE id="VnEftX" name="WavetableOscillator.h" compile="0" resource="0"
+            file="Source/WavetableOscillator.h"/>
       <FILE id="yi0VMH" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="c9qfLM" name="PluginProcessor.h" compile="0" resource="0"
