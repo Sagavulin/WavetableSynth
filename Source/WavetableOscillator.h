@@ -9,6 +9,9 @@ public:
 	void setFrequency(float frequency);
 	float getSample();
 
+	void stop();
+	bool isPlaying();
+
 private:
 	float interpolateLinearly();
 

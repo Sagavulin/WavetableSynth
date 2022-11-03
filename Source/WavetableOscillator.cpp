@@ -29,3 +29,14 @@ float WavetableOscillator::interpolateLinearly()
 
 	return truncatedIndexWeight * waveTable[truncatedIndex] + nextIndexWeight * waveTable[nextIndex];
 }
+
+void WavetableOscillator::stop()
+{
+	index = 0.f;
+	indexIncrement = 0.f;
+}
+
+bool WavetableOscillator::isPlaying()
+{
+	return indexIncrement != 0.f;
+}

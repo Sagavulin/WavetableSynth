@@ -1,11 +1,43 @@
 #include "WavetableSynth.h"
 
+std::vector<float> WavetableSynth::generateSineWavetable()
+{
+	const auto WAVETABLE_LENGHT = 64;
+
+	std::vector<float> sineWaveTable(WAVETABLE_LENGHT);
+
+	const auto PI = std::atanf(1.f) * 4;
+
+	for (auto i = 0; i < WAVETABLE_LENGHT; i++)
+	{
+		sineWaveTable[i] = std::sinf(2 * PI * static_cast<float>(i) / static_cast<float>(WAVETABLE_LENGHT));
+	}
+
+	return sineWaveTable;
+}
+
+void WavetableSynth::initializeOscillators()
+{
+	constexpr auto OSCILLATORS_COUNT = 128;
+
+	const auto waveTable = generateSineWavetable();
+
+	oscillators.clear();
+	for (auto i = 0; i < OSCILLATORS_COUNT; i++)
+	{
+		oscillators.emplace_back(waveTable, sampleRate);
+	}
+}
+
+
 void WavetableSynth::prepareToPlay(double sampleRate)
 {
 	this->sampleRate = sampleRate;
+
+	initializeOscillators();
 }
 
-void WavetableSynth::processBlock(juce::AudioBuffer<float>&buffer, juce::MidiBuffer&)
+void WavetableSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 	auto currentSample = 0;
 
@@ -23,6 +55,27 @@ void WavetableSynth::processBlock(juce::AudioBuffer<float>&buffer, juce::MidiBuf
 	render(buffer, currentSample, buffer.getNumSamples());
 }
 
+void WavetableSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample)
+{
+	auto* firstChannel = buffer.getWritePointer(0);
+
+	for (auto& oscillator : oscillators)
+	{
+		if (oscillator.isPlaying())
+		{
+			for (auto sample = startSample; sample < endSample; ++sample)
+			{
+				firstChannel[sample] += oscillator.getSample();
+			}
+		}
+	}
+
+	for (auto channel = 1; channel < buffer.getNumChannels(); ++channel)
+	{
+		std::copy (firstChannel + startSample, firstChannel + endSample, buffer.getWritePointer(channel) + startSample);
+	}
+}
+
 void WavetableSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 {
 	if (midiEvent.isNoteOn())
@@ -33,11 +86,15 @@ void WavetableSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 	}
 	else if (midiEvent.isNoteOff())
 	{
-
+		const auto oscillatorId = midiEvent.getNoteNumber();
+		oscillators[oscillatorId].stop();
 	}
 	else if (midiEvent.isAllNotesOff())
 	{
-
+		for (auto& oscillator : oscillators)
+		{
+			oscillator.stop();
+		}
 	}
 }
 

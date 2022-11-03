@@ -134,7 +134,7 @@ void WavetableSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     
     buffer.clear();
 
-    synth.processBlock([&]buffer, [&]midiMessages);
+    synth.processBlock(buffer, midiMessages);
 }
 
 //==============================================================================
